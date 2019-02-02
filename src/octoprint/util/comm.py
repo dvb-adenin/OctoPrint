@@ -13,6 +13,8 @@ import threading
 import contextlib
 import copy
 
+from octoprint.util.BugHunting import *
+
 try:
 	import queue
 except ImportError:
@@ -1255,6 +1257,7 @@ class MachineCom(object):
 			self._continue_sending()
 
 	def setPause(self, pause, local_handling=True, tags=None):
+		printCallSequence(5)
 		if self.isStreaming():
 			return
 
@@ -1571,6 +1574,7 @@ class MachineCom(object):
 						elif action_command == "pause":
 							self._log("Pausing on request of the printer...")
 							self.setPause(True)
+#							self.setPause(True, local_handling=False)
 						elif action_command == "paused":
 							self._log("Printer signalled that it paused, switching state...")
 							self.setPause(True, local_handling=False)
@@ -1988,7 +1992,8 @@ class MachineCom(object):
 				##~~ Parsing for pause triggers
 				if pause_triggers and not self.isStreaming():
 					if "enable" in pause_triggers.keys() and pause_triggers["enable"].search(line) is not None:
-						self.setPause(True)
+#						self.setPause(True)
+						self.setPause(True, local_handling = False)
 					elif "disable" in pause_triggers.keys() and pause_triggers["disable"].search(line) is not None:
 						self.setPause(False)
 					elif "toggle" in pause_triggers.keys() and pause_triggers["toggle"].search(line) is not None:
